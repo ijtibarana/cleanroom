@@ -37,6 +37,7 @@ type JsonRecord = Record<string, unknown>
 
 const configuredBase = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim()
 export const API_BASE_URL = (configuredBase || '').replace(/\/$/, '')
+export const DEMO_MODE = String(import.meta.env.VITE_DEMO_MODE ?? '').toLowerCase() === 'true'
 
 const endpoint = (path: string) => `${API_BASE_URL}/api${path}`
 
@@ -162,3 +163,24 @@ export const CHECK_NAMES = [
   '.env.example',
   'Absolute paths',
 ]
+
+export function demoAudit(): Audit {
+  const checks: CheckResult[] = [
+    ['git', 'Git repository', 'PASS', 'Git metadata and a commit were verified.', ['HEAD points to a commit object.'], ['.git']],
+    ['lockfile', 'Dependency lockfile', 'PASS', 'The detected npm project has a lockfile.', ['Found package-lock.json for npm.'], ['package-lock.json']],
+    ['runtime', 'Runtime pinned', 'PASS', 'Node.js is pinned explicitly.', ['.nvmrc: 22.23.3'], ['.nvmrc']],
+    ['dockerfile', 'Dockerfile', 'UNVERIFIED', 'Docker is unavailable in this preview, so the image was not built.', ['docker executable not found'], ['Dockerfile']],
+    ['test-command', 'Test command', 'UNVERIFIED', 'A test command is documented but needs Docker verification.', ['Found npm test; isolated execution is unavailable.'], ['README.md', 'package.json']],
+    ['readme', 'README setup', 'PASS', 'Setup, run, and test instructions are documented.', ['Detected setup, run, and test instructions.'], ['README.md']],
+    ['env-example', '.env.example', 'PASS', 'Example configuration uses placeholders only.', ['No real credential-like values detected.'], ['.env.example']],
+    ['absolute-paths', 'Absolute paths', 'PASS', 'No suspicious machine-specific paths were detected.', ['Scanned repository text files and symlink targets safely.'], []],
+  ].map(([id, name, status, summary, evidence, files]) => ({
+    id: String(id), name: String(name), status: status as CheckStatus, summary: String(summary), evidence: evidence as string[], recommendation: status === 'PASS' ? 'No action needed.' : 'Run this check in a local environment with Docker available.', files: files as string[],
+  }))
+
+  return {
+    id: 'preview-demo', repositoryPath: 'fixtures/healthy-project', status: 'completed', overallStatus: 'UNVERIFIED', checks,
+    logs: [{ id: 'demo-log-1', command: 'docker build --network=none --pull=false', output: 'Docker unavailable in preview mode; verification recorded as UNVERIFIED.', containerStatus: 'unavailable', level: 'info' }],
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+  }
+}

@@ -6,6 +6,8 @@ import {
   CheckResult,
   CheckStatus,
   CHECK_NAMES,
+  DEMO_MODE,
+  demoAudit,
   getAudit,
   getLogs,
   isRunning,
@@ -85,6 +87,14 @@ function App() {
       return
     }
     setError('')
+    if (DEMO_MODE) {
+      const previewAudit = demoAudit()
+      previewAudit.repositoryPath = path
+      setAudit(previewAudit)
+      setSelectedCheck(previewAudit.checks[0])
+      setLogs(previewAudit.logs)
+      return
+    }
     setLoading(true)
     setLogs([])
     setSelectedCheck(null)
@@ -106,6 +116,16 @@ function App() {
   }, { PASS: 0, FAIL: 0, UNVERIFIED: 0, SKIPPED: 0 }), [activeChecks])
 
   const auditTitle = audit ? `${audit.repositoryPath || repositoryPath || 'Selected repository'}` : 'No repository selected'
+
+  useEffect(() => {
+    if (DEMO_MODE && !audit) {
+      const previewAudit = demoAudit()
+      setAudit(previewAudit)
+      setRepositoryPath(previewAudit.repositoryPath)
+      setSelectedCheck(previewAudit.checks[0])
+      setLogs(previewAudit.logs)
+    }
+  }, [audit])
 
   return (
     <div className="app-shell">
@@ -215,7 +235,7 @@ function App() {
           <LogList logs={logs} running={running} hasAudit={Boolean(audit)} />
         </section>
 
-        <footer className="footer"><span>CleanRoom / local-first repository auditing</span><span>API base: {API_BASE_URL || 'same origin'}</span></footer>
+        <footer className="footer"><span>CleanRoom / local-first repository auditing</span><span>{DEMO_MODE ? 'Preview mode · sample audit' : `API base: ${API_BASE_URL || 'same origin'}`}</span></footer>
       </main>
     </div>
   )
