@@ -1,0 +1,5 @@
+{
+  "name": "cleanroom-incomplete-fixture",
+  "private": true,
+  "scripts": {"test": "node --version"}
+}

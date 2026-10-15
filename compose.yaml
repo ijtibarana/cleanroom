@@ -1,0 +1,10 @@
+services:
+  cleanroom:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.example
+    read_only: true
+    tmpfs:
+      - /tmp
