@@ -8,3 +8,4 @@ frontend/dist/
 .env
 .DS_Store
 .opencode/
+tools/video/

@@ -55,6 +55,16 @@ npm run dev
 
 Open <http://localhost:5173>, enter a repository path visible to the API process, and choose **Start audit**. The API is also available at <http://localhost:8000/docs>.
 
+For a frontend-only preview without a backend, build the included sample audit mode:
+
+```bash
+cd frontend
+VITE_DEMO_MODE=true npm run build
+python3 -m http.server 4173 --directory dist
+```
+
+This preview is clearly labeled as sample data and keeps the real API mode as the default.
+
 To serve the built UI from the API, build the frontend and run the API from the repository root:
 
 ```bash
