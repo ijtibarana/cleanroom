@@ -65,6 +65,8 @@ python3 -m http.server 4173 --directory dist
 
 This preview is clearly labeled as sample data and keeps the real API mode as the default.
 
+The repository includes `vercel.json` for a frontend-only preview deployment. It builds the clearly labeled sample-audit mode; the FastAPI backend remains available for local or Docker use.
+
 To serve the built UI from the API, build the frontend and run the API from the repository root:
 
 ```bash

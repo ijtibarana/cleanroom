@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd frontend && VITE_DEMO_MODE=true npm run build",
+  "installCommand": "cd frontend && npm ci",
+  "outputDirectory": "frontend/dist",
+  "framework": "vite"
+}
